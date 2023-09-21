@@ -1,6 +1,7 @@
-from rule_parser import RuleParser
+from dsl import DSL
 
 rule_dsl = 'IF age > 18 AND gender == "male" THEN is_eligible = true'
-rule_parser = RuleParser(rule_dsl)
-rule_parser.parse()
-print(rule_parser.ast)
+dsl = DSL(rule_dsl)
+facts = {'age': 20, 'gender': 'male', 'is_eligible': False}
+dsl.execute(facts)
+print(facts['is_eligible'])  # Output: True
