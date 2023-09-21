@@ -1,3 +1,6 @@
+from agenda import Agenda
+
+
 class WorkingMemory:
     def __init__(self, facts):
         self.facts = facts
@@ -16,13 +19,18 @@ class RuleEngineCore:
     def __init__(self, rules):
         self.rules = rules
         self.working_memory = WorkingMemory({})
+        self.agenda = Agenda()
 
     def execute(self):
+        for rule in self.rules:
+            self.agenda.add_rule(rule, rule.priority)
+
         while True:
-            fired = False
-            for rule in self.rules:
-                if rule.evaluate(self.working_memory.facts):
-                    rule.execute(self.working_memory.facts)
-                    fired = True
-            if not fired:
+            rule = self.agenda.get_next_rule()
+            if rule is None:
                 break
+            if rule.evaluate(self.working_memory.facts):
+                rule.execute(self.working_memory.facts)
+                for r in self.rules:
+                    if r != rule and r.evaluate(self.working_memory.facts):
+                        self.agenda.update_rule(r, r.priority)
